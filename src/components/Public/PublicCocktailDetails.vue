@@ -16,7 +16,7 @@
                 <div class="has-markdown" v-show="cocktail.description" itemprop="description" v-html="parsedDescription"></div>
                 <div class="bar-cocktail-recipe__info__source">
                     <button class="button button--public" @click="showPrintDialog">{{ $t("print-recipe") }}</button>
-                    <a v-if="cocktail.source && isValidURL" :href="cocktail.source" target="_blank" rel="noopener noreferrer"
+                    <a v-if="sourceUrl" :href="sourceUrl" target="_blank" rel="noopener noreferrer"
                         >{{ $t("public-bar.recipe-source") }}
                         <svg class="bar-cocktail-recipe__external-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                             <path
@@ -75,6 +75,7 @@ import { micromark } from "micromark";
 import CocktailIngredient from "./PublicCocktailIngredient.vue";
 import CocktailRecipeScaler from "./../Cocktail/CocktailRecipeScaler.vue";
 import AppState from "@/AppState";
+import { resolveSourceUrl } from "@/composables/sourceLink";
 
 type Cocktail = components["schemas"]["PublicCocktailResource"];
 type CocktailTag = {
@@ -138,21 +139,7 @@ const cocktailTags = computed(() => {
     return result;
 });
 
-const isValidURL = computed(() => {
-    if (!props.cocktail.source) {
-        return false;
-    }
-
-    let url;
-
-    try {
-        url = new URL(props.cocktail.source);
-    } catch (err) {
-        return false;
-    }
-
-    return url.protocol === "http:" || url.protocol === "https:";
-});
+const sourceUrl = computed(() => resolveSourceUrl(props.cocktail.source));
 
 const showPrintDialog = () => {
     window.print();

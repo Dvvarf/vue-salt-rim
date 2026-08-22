@@ -24,7 +24,7 @@
             <template v-if="cocktail.source">
                 <dt>{{ t("source") }}</dt>
                 <dd>
-                    <a class="external-link" v-if="isValidUrl(cocktail.source)" :href="cocktail.source" target="_blank">{{ t("website") }} <IconExternal /></a>
+                    <a v-if="sourceUrl" class="external-link" :href="sourceUrl" target="_blank" rel="noopener noreferrer">{{ t("website") }} <IconExternal /></a>
                     <span v-else>{{ cocktail.source }}</span>
                 </dd>
             </template>
@@ -71,6 +71,8 @@
 
 <script setup lang="ts">
 import type { components } from "@/api/api";
+import { computed } from "vue";
+import { resolveSourceUrl } from "@/composables/sourceLink";
 import Rating from "@/components/RatingActions.vue";
 import { useI18n } from "vue-i18n";
 import IconExternal from "@/components/Icons/IconExternal.vue";
@@ -82,17 +84,7 @@ const props = defineProps<{
     cocktail: Cocktail;
 }>();
 
-function isValidUrl(input: string) {
-    let url;
-
-    try {
-        url = new URL(input);
-    } catch (err) {
-        return false;
-    }
-
-    return url.protocol === "http:" || url.protocol === "https:";
-}
+const sourceUrl = computed(() => resolveSourceUrl(props.cocktail.source));
 </script>
 
 <style scoped>
