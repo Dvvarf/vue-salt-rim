@@ -37,7 +37,6 @@ test("schemeless values must be ascii and free of whitespace", () => {
     expect(resolveSourceUrl("Cocktailkunst — Moderne Bar")).toBeNull();
     expect(resolveSourceUrl("Bücher.de")).toBeNull();
     expect(resolveSourceUrl("example.com is a nice site")).toBeNull();
-    // ...but a full url may carry non ascii, and gets punycoded.
     expect(resolveSourceUrl("https://bücher.de")).toBe("https://xn--bcher-kva.de/");
 });
 
@@ -59,23 +58,20 @@ test("empty sources are not links", () => {
 });
 
 test("real sources from the bar-assistant/data recipe set", () => {
-    // Websites, as the official data records them.
     expect(resolveSourceUrl("https://iba-world.com/692/")).toBe("https://iba-world.com/692/");
     expect(resolveSourceUrl("https://jeffreymorgenthaler.com/i-make-the-best-amaretto-sour-in-the-world/")).toBe(
         "https://jeffreymorgenthaler.com/i-make-the-best-amaretto-sour-in-the-world/",
     );
-    // Books, people and places, which must stay plain text.
     expect(resolveSourceUrl("Beachbum Berry's Grog Log by Jeff Berry & Annene Kaye, p. 66.")).toBeNull();
     expect(resolveSourceUrl("Douglas Ankrah, The Townhouse | London")).toBeNull();
     expect(resolveSourceUrl("Wardman Park Hotel, Washington, D. C.")).toBeNull();
     expect(resolveSourceUrl("Jim Meehan [2012]")).toBeNull();
     expect(resolveSourceUrl("Trader Vic")).toBeNull();
-    // A single word with no dot: the old logic linked this one to a broken relative url.
+    // A single word with no dot, which the old logic linked to a broken relative url.
     expect(resolveSourceUrl("Mexico")).toBeNull();
 });
 
 test("resolved links are always absolute", () => {
-    // A relative href would send the browser to /cocktails/example.com.
     for (const source of ["example.com", "www.example.com/path", "https://example.com"]) {
         expect(resolveSourceUrl(source)).toMatch(/^https?:\/\//);
     }
