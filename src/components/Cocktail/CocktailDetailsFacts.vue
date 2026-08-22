@@ -83,12 +83,15 @@ const props = defineProps<{
 }>();
 
 function isValidUrl(input: string) {
+    let url;
+
     try {
-        new URL(input.startsWith("http") ? input : `https://${input}`);
-        return true;
+        url = new URL(input);
     } catch (err) {
         return false;
     }
+
+    return url.protocol === "http:" || url.protocol === "https:";
 }
 </script>
 

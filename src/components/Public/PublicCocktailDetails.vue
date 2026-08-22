@@ -143,14 +143,15 @@ const isValidURL = computed(() => {
         return false;
     }
 
-    const source = props.cocktail.source || "";
+    let url;
 
     try {
-        new URL(source.startsWith("http") ? source : `https://${source}`);
-        return true;
+        url = new URL(props.cocktail.source);
     } catch (err) {
         return false;
     }
+
+    return url.protocol === "http:" || url.protocol === "https:";
 });
 
 const showPrintDialog = () => {
